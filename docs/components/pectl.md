@@ -101,9 +101,11 @@ Flags: `-c`/`--compressor` (`flate` (default) | `lzfse` | `lz4`), `--level`
 (required).
 
 - `flate`: stdlib `compress/flate`, runnable envelope.
-- `lzfse`: **host-side only** as of M6.2 PR4 — produces a packed PE on disk but
-  warns that the embedded runtime stub is still flate-only.
-- `lz4`: returns "compressor not implemented in this build".
+- `lzfse`: **host-side only** — produces a packed PE on disk but warns that the
+  embedded runtime stub is still flate-only.
+- `lz4`: **host-side only** — like `lzfse`, produces a packed PE on disk (pure-Go
+  `go-compressions/lz4` host codec) and warns that the embedded runtime stub is
+  still flate-only.
 
 Runnable envelopes: arm64, riscv64, loong64; amd64 ships the same wire format
 but its runtime stub is deferred.
