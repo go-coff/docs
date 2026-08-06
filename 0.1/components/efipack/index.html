@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/logo.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -622,12 +622,14 @@ sufficiently large EFI binaries (cloud-boot M6.2 milestone).</p>
 <div class="highlight"><pre><span></span><code>go<span class="w"> </span>get<span class="w"> </span>github.com/go-coff/efipack
 </code></pre></div>
 <div class="admonition note">
-<p class="admonition-title">Host side only (as of this revision)</p>
-<p>This revision ships the <strong>host side</strong>: it compresses an input and assembles
-the self-extracting envelope, but the emitted <code>.stub</code> section still carries
-a <code>TODO_STUB</code> placeholder — the output is <strong>not yet a runnable EFI</strong>. The
-per-arch runtime decompressor stub, the <code>pectl pack</code> integration and the
-cross-arch boot-smoke matrix land in later PRs.</p>
+<p class="admonition-title">Runnable with <code>Flate</code>; <code>LZFSE</code>/<code>LZ4</code> are host-side only</p>
+<p><code>Pack</code> embeds a real per-arch self-extracting runtime stub — the old
+<code>TODO_STUB</code> placeholder is gone. A <strong><code>Flate</code>-packed</strong> binary is a genuinely
+runnable self-extracting EFI on arm64, riscv64 and loong64 (the amd64
+runtime stub is deferred). <code>LZFSE</code> and <code>LZ4</code> compress and round-trip
+correctly on the host and assemble a valid packed PE, but the embedded
+stubs decode <code>FLAT</code> only, so an <code>LZFSE</code>/<code>LZ4</code>-packed image does not yet boot
+under firmware — use <code>Flate</code> for a runnable packed EFI.</p>
 </div>
 <h2 id="api-surface">API surface</h2>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/go-coff/efipack&quot;</span>
@@ -666,7 +668,7 @@ cross-arch boot-smoke matrix land in later PRs.</p>
 </tr>
 <tr>
 <td><code>Compressor</code> (<code>Flate</code> / <code>LZFSE</code> / <code>LZ4</code>)</td>
-<td>algorithm switch</td>
+<td>algorithm switch; all three host codecs are wired</td>
 </tr>
 <tr>
 <td><code>Arch</code> (<code>AmdArch</code> / <code>ArmArch</code> / <code>RiscvArch</code> / <code>LoongArch</code>)</td>
@@ -682,12 +684,13 @@ cross-arch boot-smoke matrix land in later PRs.</p>
 </tr>
 <tr>
 <td><code>ErrCompressorNotImplemented</code></td>
-<td>sentinel for codecs not yet wired (<code>LZ4</code>)</td>
+<td>reserved sentinel; no codec returns it (all three host codecs are wired)</td>
 </tr>
 </tbody>
 </table>
 <p>The envelope is a standard PE32+/EFI structure: DOS stub + PE signature + COFF +
-optional header + section table + a <code>.stub</code> placeholder + a <code>.payload</code> body.</p>
+optional header + section table + a real per-arch runtime decompressor <code>.stub</code> +
+a <code>.payload</code> body.</p>
 <h2 id="payload-wire-format"><code>.payload</code> wire format</h2>
 <p>PE/COFF — and this envelope — are <strong>little-endian</strong>:</p>
 <div class="highlight"><pre><span></span><code>.payload section body:
@@ -697,15 +700,16 @@ optional header + section table + a <code>.stub</code> placeholder + a <code>.pa
   compressed    uint64    little-endian — body size in bytes
   body          [N]byte   exactly N=compressed bytes; codec-specific stream
 </code></pre></div>
-<p>The (future) runtime stub reads this header, allocates exactly the right number
+<p>The runtime stub reads this header, allocates exactly the right number
 of <code>EfiBootServicesCode</code> pages, decompresses, then chain-loads via
 <code>gBS-&gt;LoadImage</code> + <code>gBS-&gt;StartImage</code>.</p>
 <h2 id="why-flate-as-the-default">Why Flate as the default?</h2>
 <p>Cloud-boot binaries already link <code>compress/gzip</code>, so a Flate-based stub adds
 <strong>zero bytes</strong> versus LZFSE's ~100–200 KiB cost. The ~1-point raw-ratio gap
 (LZFSE 40.13 % vs Flate 39.11 %) is negligible against the multi-MiB binaries
-being compressed. <code>Flate</code> is therefore the zero-value default; <code>LZFSE</code> is
-host-side only and <code>LZ4</code> is reserved.</p>
+being compressed. <code>Flate</code> is therefore the zero-value default; <code>LZFSE</code> and
+<code>LZ4</code> are host-side only — both produce a valid packed PE, but the embedded
+stubs decode <code>FLAT</code> only for now.</p>
 <p>Licensed BSD-3-Clause.</p>
 
 
@@ -765,7 +769,7 @@ host-side only and <code>LZ4</code> is reserved.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
