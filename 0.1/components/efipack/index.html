@@ -632,14 +632,14 @@ stubs decode <code>FLAT</code> only, so an <code>LZFSE</code>/<code>LZ4</code>-p
 under firmware — use <code>Flate</code> for a runnable packed EFI.</p>
 </div>
 <h2 id="api-surface">API surface</h2>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/go-coff/efipack&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="s">"github.com/go-coff/efipack"</span>
 
 <span class="c1">// Detect the architecture of an input PE32+ from its COFF header.</span>
 <span class="nx">arch</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">efipack</span><span class="p">.</span><span class="nx">InferArch</span><span class="p">(</span><span class="nx">peBytes</span><span class="p">)</span>
 <span class="c1">// arch ∈ {AmdArch, ArmArch, RiscvArch, LoongArch}</span>
 
-<span class="nx">in</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="nx">os</span><span class="p">.</span><span class="nx">Open</span><span class="p">(</span><span class="s">&quot;BOOTX64.EFI&quot;</span><span class="p">)</span>
-<span class="nx">out</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">os</span><span class="p">.</span><span class="nx">Create</span><span class="p">(</span><span class="s">&quot;BOOTX64-packed.EFI&quot;</span><span class="p">)</span>
+<span class="nx">in</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="nx">os</span><span class="p">.</span><span class="nx">Open</span><span class="p">(</span><span class="s">"BOOTX64.EFI"</span><span class="p">)</span>
+<span class="nx">out</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">os</span><span class="p">.</span><span class="nx">Create</span><span class="p">(</span><span class="s">"BOOTX64-packed.EFI"</span><span class="p">)</span>
 <span class="nx">res</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">efipack</span><span class="p">.</span><span class="nx">Pack</span><span class="p">(</span><span class="nx">in</span><span class="p">,</span><span class="w"> </span><span class="nx">out</span><span class="p">,</span><span class="w"> </span><span class="nx">efipack</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span>
 <span class="w">    </span><span class="nx">Compressor</span><span class="p">:</span><span class="w"> </span><span class="nx">efipack</span><span class="p">.</span><span class="nx">Flate</span><span class="p">,</span><span class="w"> </span><span class="c1">// default; zero stub cost</span>
 <span class="w">    </span><span class="nx">Level</span><span class="p">:</span><span class="w">      </span><span class="mi">0</span><span class="p">,</span><span class="w">             </span><span class="c1">// 0 → codec default</span>
@@ -694,8 +694,8 @@ a <code>.payload</code> body.</p>
 <h2 id="payload-wire-format"><code>.payload</code> wire format</h2>
 <p>PE/COFF — and this envelope — are <strong>little-endian</strong>:</p>
 <div class="highlight"><pre><span></span><code>.payload section body:
-  magic         [4]byte   &quot;CBP0&quot;   — cloud-boot pack v0
-  algo          [4]byte   &quot;FLAT&quot; | &quot;LZFS&quot; | &quot;LZ4 &quot;
+  magic         [4]byte   "CBP0"   — cloud-boot pack v0
+  algo          [4]byte   "FLAT" | "LZFS" | "LZ4 "
   uncompressed  uint64    little-endian — host-input size in bytes
   compressed    uint64    little-endian — body size in bytes
   body          [N]byte   exactly N=compressed bytes; codec-specific stream
