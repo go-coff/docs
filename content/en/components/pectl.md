@@ -1,7 +1,12 @@
-# pectl — reference CLI
+---
+title: "pectl — reference CLI"
+weight: 40
+---
+
+# pectl — reference CLI {#pectl-reference-cli}
 
 `github.com/go-coff/pectl` is the Cobra-based reference CLI for building UEFI
-PE/COFF binaries in pure Go, built on the [`peln`](peln.md) library. It
+PE/COFF binaries in pure Go, built on the [`peln`]({{< relref "peln.md" >}}) library. It
 **links**, **converts**, **appends to**, **packs** and **signs** PE32+/EFI
 images without binutils, LLD, `objcopy` or `sbsign`.
 
@@ -11,7 +16,7 @@ go install github.com/go-coff/pectl@latest
 
 Pre-built binaries for linux/macOS/windows are attached to each release.
 
-## Subcommands
+## Subcommands {#subcommands}
 
 ```text
 pectl link     [flags] OBJECT...   # link relocatable .o files → PE32+ EFI
@@ -22,7 +27,7 @@ pectl pack     [flags] INPUT.efi   # compress PE32+ EFI → self-extracting PE32
 pectl sign     [flags] INPUT       # Authenticode-sign for SecureBoot
 ```
 
-### `pectl link`
+### `pectl link` {#pectl-link}
 
 Link one or more COFF/PE or ELF **relocatable** objects (e.g. from TinyGo or
 clang) into a self-contained PE32+/EFI application — the pure-Go replacement for
@@ -37,7 +42,7 @@ Flags: `--machine` (amd64|arm64|riscv64|loongarch64), `--entry` (default
 `_start`), `--subsystem` (default 10), `--image-base`, `--allow-unresolved`,
 `--section-alignment`, `--file-alignment`, `--header-reserve`.
 
-### `pectl link-pie`
+### `pectl link-pie` {#pectl-link-pie}
 
 Convert an already-linked **position-independent** ELF executable (`ET_DYN`, as
 produced by `go build -buildmode=pie` for a bare-metal `GOOS` such as
@@ -50,7 +55,7 @@ GOOS=tamago GOARCH=loong64 go build -buildmode=pie -o hello-pie.elf .
 pectl link-pie -o BOOTLOONG64.EFI hello-pie.elf
 ```
 
-### `pectl objcopy`
+### `pectl objcopy` {#pectl-objcopy}
 
 Convert an ELF executable into a **non-UEFI** bare-metal image — a flat binary
 (`objcopy -O binary`), Motorola S-record, Intel HEX, or legacy U-Boot uImage
@@ -63,7 +68,7 @@ pectl objcopy -O ihex   -o fw.hex     fw.elf
 pectl objcopy -O uimage --load 0x80000 --entry 0x80000 --name linux -o uImage kernel.elf
 ```
 
-### `pectl append`
+### `pectl append` {#pectl-append}
 
 Add sections at the end of an existing PE32/PE32+ image while preserving every
 existing section byte-for-byte — UEFI Unified Kernel Image (UKI) assembly.
@@ -85,7 +90,7 @@ pectl append --linux=vmlinuz.efi --initrd=initramfs.cpio.gz \
 For any other section: `--section name=path` (also `-s name=path`), repeatable,
 any name up to 8 bytes.
 
-### `pectl pack`
+### `pectl pack` {#pectl-pack}
 
 Compress a PE32+/EFI image into a **self-extracting PE32+/EFI envelope**
 (decompressor stub + compressed `.payload` section). Architecture is
@@ -110,7 +115,7 @@ Flags: `-c`/`--compressor` (`flate` (default) | `lzfse` | `lz4`), `--level`
 Runnable envelopes: arm64, riscv64, loong64; amd64 ships the same wire format
 but its runtime stub is deferred.
 
-### `pectl sign`
+### `pectl sign` {#pectl-sign}
 
 Authenticode-sign a PE/COFF image so SecureBoot firmware whose db trusts the
 cert will load it — pure Go, no `sbsign`/`sbsigntools`. Sign **last**: any
@@ -120,7 +125,7 @@ post-signing `append` invalidates the Authenticode digest.
 pectl sign --key=db.key --cert=db.crt -o BOOTAA64-signed.EFI BOOTAA64.EFI
 ```
 
-## Exit codes
+## Exit codes {#exit-codes}
 
 | Code | Meaning |
 | ---- | ------- |

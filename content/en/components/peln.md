@@ -1,4 +1,9 @@
-# peln — PE/COFF library
+---
+title: "peln — PE/COFF library"
+weight: 30
+---
+
+# peln — PE/COFF library {#peln-pecoff-library}
 
 `github.com/go-coff/peln` is the pure-Go PE/COFF library for building **UEFI
 applications** without binutils or LLD. Zero third-party dependencies, 100 %
@@ -16,7 +21,7 @@ It ships three packages:
 | `appender` | `github.com/go-coff/peln/appender` | add sections to an existing PE (UKI assembly) — the equivalent of `objcopy --add-section` |
 | `fwimg` | `github.com/go-coff/peln/fwimg` | **non-UEFI** bare-metal images: ELF→flat binary (`objcopy -O binary`), Motorola SREC, Intel HEX, and U-Boot uImage (`mkimage`) |
 
-## `linker` — objects → PE/EFI
+## `linker` — objects → PE/EFI {#linker-objects-peefi}
 
 `linker.Link` merges one or more COFF/PE or ELF **relocatable** objects (`.o`,
 `ET_REL` — e.g. from TinyGo or clang) into a self-contained PE32+/EFI
@@ -39,7 +44,7 @@ architecture has its own relocation backend (`reloc_x86_64*.go`,
 `reloc_aarch64*.go`, `reloc_rv64.go`, `reloc_loongarch64.go`). It is motivated
 by riscv64 and loongarch64, which LLD's COFF driver does not support.
 
-### `LinkPIE` — a position-independent ELF → PE/EFI
+### `LinkPIE` — a position-independent ELF → PE/EFI {#linkpie-a-position-independent-elf-peefi}
 
 `linker.LinkPIE` converts an already-linked **position-independent executable**
 (`ET_DYN`, as produced by `go build -buildmode=pie` for a bare-metal `GOOS`
@@ -58,7 +63,7 @@ Supported machines: amd64, arm64, riscv64, loongarch64. (`debug/pe` cannot
 *read* machine `0x6264`, but the emitted bytes are a valid PE32+ that firmware
 and `objdump`/`llvm-readobj` parse.)
 
-## `appender` — add sections to a PE
+## `appender` — add sections to a PE {#appender-add-sections-to-a-pe}
 
 `appender.Append` adds new sections at the end of an existing PE32/PE32+ image
 while leaving every existing section's RVA, file offset and contents
@@ -77,7 +82,7 @@ _ = os.WriteFile("BOOTX64.EFI", out, 0o644)
 The stub must reserve enough header padding to absorb the new section-table
 entries (`SizeOfHeaders` is not grown); all systemd UEFI stubs do.
 
-## `fwimg` — non-UEFI bare-metal images
+## `fwimg` — non-UEFI bare-metal images {#fwimg-non-uefi-bare-metal-images}
 
 Not every bare-metal target is UEFI. For images loaded at a fixed address by a
 bootloader or ROM, `fwimg` converts an ELF executable into the relevant
@@ -96,4 +101,4 @@ uimg := fwimg.UImage(flat, fwimg.UImageOptions{        // U-Boot bootm payload
 
 The CLI exposes this as `pectl objcopy -O binary|srec|ihex|uimage`.
 
-A reference CLI lives in [`pectl`](pectl.md). Licensed BSD-3-Clause.
+A reference CLI lives in [`pectl`]({{< relref "pectl.md" >}}). Licensed BSD-3-Clause.
