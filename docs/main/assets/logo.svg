@@ -1,0 +1,17 @@
+<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="go-coff">
+  <defs>
+    <linearGradient id="gocyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22CCE2"/>
+      <stop offset="1" stop-color="#0079A8"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#gocyan)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="72" y="66" width="112" height="32" rx="8"/>
+    <rect x="72" y="112" width="112" height="32" rx="8"/>
+    <rect x="72" y="158" width="112" height="32" rx="8"/>
+    <path d="M96 82h10M120 82h44"/>
+    <path d="M96 128h10M120 128h44"/>
+    <path d="M96 174h10M120 174h44"/>
+  </g>
+</svg>
