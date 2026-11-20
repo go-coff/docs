@@ -18,7 +18,7 @@ title: "go-coff"
 # from copying an older site in this fleet.
 
 # themes/hextra is the tannevaled/hextra fork, pinned at a release tag as a
-# submodule: upstream Hextra plus opt-in features (partial menu items, combos,
+# submodule (v0.24.1): upstream Hextra plus opt-in features (partial menu items, combos,
 # related-sites menu, page subtitle and history, darkreaderLock).
 theme: hextra
 
@@ -84,4 +84,4 @@ params:
     width: normal
   editURL:
     enable: true
-    base: "https://github.com/go-coff/edit/main/content/en"
+    base: "https://github.com/go-coff/docs/edit/main/content/en"
