@@ -19,7 +19,7 @@ It ships three packages:
 | ------- | ------ | --- |
 | `linker` | `github.com/go-coff/peln/linker` | turn relocatable objects (or a PIE) into a PE32+/EFI image — the pure-Go replacement for `lld-link /subsystem:efi_application` |
 | `appender` | `github.com/go-coff/peln/appender` | add sections to an existing PE (UKI assembly) — the equivalent of `objcopy --add-section` |
-| `fwimg` | `github.com/go-coff/peln/fwimg` | **non-UEFI** bare-metal images: ELF→flat binary (`objcopy -O binary`), Motorola SREC, Intel HEX, and U-Boot uImage (`mkimage`) |
+| `fwimg` | `github.com/go-coff/peln/fwimg` (**deprecated**, now `github.com/go-binfmt/fwimg`) | **non-UEFI** bare-metal images: ELF→flat binary (`objcopy -O binary`), Motorola SREC, Intel HEX, and U-Boot uImage (`mkimage`) |
 
 ## `linker` — objects → PE/EFI {#linker-objects-peefi}
 
@@ -84,17 +84,25 @@ entries (`SizeOfHeaders` is not grown); all systemd UEFI stubs do.
 
 ## `fwimg` — non-UEFI bare-metal images {#fwimg-non-uefi-bare-metal-images}
 
+**Deprecated since v0.6.0.** `github.com/go-coff/peln/fwimg` is frozen and moved
+to [`github.com/go-binfmt/fwimg`](https://go-binfmt.github.io/docs/fwimg/)
+(go-binfmt owns the non-PE formats). The new module refuses an image whose size
+comes from attacker-controlled addresses, a segment outside the input, an
+address range that wraps, and SREC/Intel HEX/uImage data past 4 GiB. Its
+signatures differ: `Flatten` takes the input size, and `SREC`, `IHEX` and
+`UImage` return an error.
+
 Not every bare-metal target is UEFI. For images loaded at a fixed address by a
 bootloader or ROM, `fwimg` converts an ELF executable into the relevant
 flat/firmware format — again with no binutils/`mkimage`/`srec_cat`:
 
 ```go
-import "github.com/go-coff/peln/fwimg"
+import "github.com/go-binfmt/fwimg"
 
-flat, base, _ := fwimg.Flatten(bytes.NewReader(elf), fwimg.FlattenOptions{}) // objcopy -O binary
-hex  := fwimg.IHEX(uint32(base), flat, 0)              // Intel HEX
-srec := fwimg.SREC(uint32(base), flat, "fw", 0, 0)     // Motorola SREC
-uimg := fwimg.UImage(flat, fwimg.UImageOptions{        // U-Boot bootm payload
+flat, base, _ := fwimg.Flatten(bytes.NewReader(elf), int64(len(elf)), fwimg.FlattenOptions{})
+hex, _  := fwimg.IHEX(uint32(base), flat, 0)              // Intel HEX
+srec, _ := fwimg.SREC(uint32(base), flat, "fw", 0, 0)     // Motorola SREC
+uimg, _ := fwimg.UImage(flat, fwimg.UImageOptions{        // U-Boot bootm payload
     Load: 0x80000, Entry: 0x80000, Name: "linux", Arch: fwimg.ArchARM64,
 })
 ```
