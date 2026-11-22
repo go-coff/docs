@@ -61,7 +61,7 @@ Convert an ELF executable into a **non-UEFI** bare-metal image — a flat binary
 (`objcopy -O binary`), Motorola S-record, Intel HEX, or legacy U-Boot uImage
 (`mkimage`) — in pure Go. `-O`/`--output-target` selects `binary` (default),
 `srec`, `ihex` or `uimage`; addresses default to the image base / ELF `e_entry`.
-Since v0.7.0 it uses [go-binfmt/fwimg](https://go-binfmt.github.io/docs/fwimg/)
+Since v0.7.0 it uses [go-binfmt/fwimg](https://github.com/go-binfmt/fwimg)
 and refuses what the input does not support: `--max-size` bounds the image
 (default 256 MiB), and a default load or entry address from a 64-bit ELF that
 does not fit 32 bits needs an explicit `--load` / `--entry`.
