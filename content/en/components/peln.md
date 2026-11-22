@@ -85,7 +85,7 @@ entries (`SizeOfHeaders` is not grown); all systemd UEFI stubs do.
 ## `fwimg` — non-UEFI bare-metal images {#fwimg-non-uefi-bare-metal-images}
 
 **Deprecated since v0.6.0.** `github.com/go-coff/peln/fwimg` is frozen and moved
-to [`github.com/go-binfmt/fwimg`](https://go-binfmt.github.io/docs/fwimg/)
+to [`github.com/go-binfmt/fwimg`](https://github.com/go-binfmt/fwimg)
 (go-binfmt owns the non-PE formats). The new module refuses an image whose size
 comes from attacker-controlled addresses, a segment outside the input, an
 address range that wraps, and SREC/Intel HEX/uImage data past 4 GiB. Its
